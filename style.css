@@ -1,0 +1,141 @@
+/* Define CSS variables for theming */
+:root {
+    --background-primary: #f0f2f5;
+    --background-secondary: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #6c757d;
+    --border-color: #e9ecef;
+    --accent-primary: #0984e3;
+    --accent-secondary: #74b9ff;
+    --danger-color: #d63031;
+    --success-color: #00b894;
+    --trend-bullish: #2ecc71;
+    --trend-bearish: #e74c3c;
+    --trend-neutral: #f39c12;
+}
+
+body.dark-mode {
+    --background-primary: #0f172a;
+    --background-secondary: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --accent-primary: #38bdf8;
+    --accent-secondary: #7dd3fc;
+    --danger-color: #f87171;
+    --success-color: #4ade80;
+}
+
+body {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.top-bar, .section, .card {
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+/* Re-style inputs for dark mode */
+body.dark-mode input, body.dark-mode select {
+    background-color: #334155;
+    color: var(--text-primary);
+    border: 1px solid #4b5563;
+}
+
+/* Theme Toggle Switch */
+.theme-switch {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 50px;
+}
+
+.theme-switch input {
+    display:none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 16px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 16px;
+}
+
+input:checked + .slider {
+    background-color: var(--accent-primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Other styles from index.html that need theming */
+.trend-bullish { color: var(--trend-bullish); }
+.trend-bearish { color: var(--trend-bearish); }
+.trend-neutral { color: var(--trend-neutral); }
+
+.market-status.status-open { background-color: var(--success-color); color: white; }
+.market-status.status-closed { background-color: var(--danger-color); color: white; }
+
+.btn-primary { background-color: var(--accent-primary); border: none; color: white; }
+.btn-danger { background-color: var(--danger-color); border: none; color: white; }
+
+a { color: var(--accent-primary); }
+
+.error-msg { color: var(--danger-color); }
+.success-msg { color: var(--success-color); }

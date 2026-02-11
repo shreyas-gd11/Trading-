@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pro Trading Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+header{
+  background:#020617;
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.container{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:15px;
+  padding:15px;
+}
+
+.card{
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 0 10px rgba(0,0,0,0.4);
+}
+
+h3{
+  margin-top:0;
+}
+
+.signal{
+  font-size:28px;
+  font-weight:bold;
+  text-align:center;
+  padding:15px;
+  border-radius:10px;
+}
+
+.buy{ background:#064e3b; color:#4ade80;}
+.sell{ background:#7f1d1d; color:#f87171;}
+.wait{ background:#1e293b; color:#eab308;}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0;
+}
+
+input,button{
+  padding:8px;
+  border-radius:6px;
+  border:none;
+  margin:5px 0;
+}
+
+button{
+  background:#38bdf8;
+  cursor:pointer;
+  width:100%;
+  font-weight:bold;
+}
+
+.history{
+  max-height:250px;
+  overflow:auto;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="/" style="color:#38bdf8; text-decoration:none; font-size:16px;">← Dashboard</a>
+  <span>📈 Pro Trading Dashboard</span>
+  <div style="width: 80px;"></div> <!-- Spacer to keep title centered -->
+</header>
+
+<div class="container">
+
+  <!-- LEFT -->
+  <div>
+
+    <div class="card">
+      <h3>Live Signal</h3>
+      <div id="finalSignal" class="signal wait">Loading...</div>
+      <div id="confidence" style="text-align:center;"></div>
+    </div>
+
+    <div class="card">
+      <h3>Strategy Breakdown</h3>
+      <div class="row"><span>SMA</span><span id="sma"></span></div>
+      <div class="row"><span>Breakout</span><span id="breakout"></span></div>
+      <div class="row"><span>RSI</span><span id="rsi"></span></div>
+      <div class="row"><span>Scalping</span><span id="scalp"></span></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div>
+
+    <div class="card">
+      <h3>Risk-Reward</h3>
+      Entry <input id="entry" type="number"><br>
+      Stop Loss <input id="sl" type="number"><br>
+      Target <input id="target" type="number"><br>
+      <button onclick="calcRR()">Calculate</button>
+      <div id="rrResult"></div>
+    </div>
+
+    <div class="card">
+      <h3>Recent Signals</h3>
+      <div id="history" class="history"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+async function loadSignal(){
+  const r = await fetch("/api/analyze?symbol=NIFTY");
+  const d = await r.json();
+
+  // FINAL SIGNAL
+  const fs = document.getElementById("finalSignal");
+  fs.innerText = d.finalSignal;
+
+  fs.className="signal "+
+    (d.finalSignal.includes("BUY")?"buy":
+     d.finalSignal.includes("SELL")?"sell":"wait");
+
+  document.getElementById("confidence")
+    .innerText="Confidence: "+d.confidence;
+
+  // STRATEGIES
+  sma.innerText=d.strategies.SMA;
+  breakout.innerText=d.strategies.Breakout;
+  rsi.innerText=d.strategies.RSI;
+  scalp.innerText=d.strategies.Scalping;
+
+  addHistory(d.finalSignal);
+}
+
+function calcRR(){
+  const e=+entry.value;
+  const slv=+sl.value;
+  const t=+target.value;
+
+  const risk=Math.abs(e-slv);
+  const reward=Math.abs(t-e);
+  const rr=(reward/risk).toFixed(2);
+
+  rrResult.innerText="Risk-Reward 1:"+rr;
+}
+
+function addHistory(sig){
+  const h=document.getElementById("history");
+  const time=new Date().toLocaleTimeString();
+  h.innerHTML=`${time} → ${sig}<br>`+h.innerHTML;
+}
+
+loadSignal();
+setInterval(loadSignal,60000);
+</script>
+
+</body>
+</html>

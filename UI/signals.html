@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Trading Signals</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f2f5; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; display: inline-block; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #34495e; color: white; font-weight: 600; }
+        tr:hover { background-color: #f8f9fa; }
+        
+        .badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
+        .buy { background-color: #e6fffa; color: #00b894; border: 1px solid #00b894; }
+        .sell { background-color: #fff5f5; color: #d63031; border: 1px solid #d63031; }
+        
+        .refresh-btn { background-color: #0984e3; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 14px; transition: background 0.3s; }
+        .refresh-btn:hover { background-color: #0769b5; }
+        
+        .meta { font-size: 0.85em; color: #666; }
+        .back-link { text-decoration: none; color: #34495e; font-weight: bold; margin-right: 15px; font-size: 16px; }
+        .back-link:hover { color: #0984e3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div style="display: flex; align-items: center;">
+            <a href="/" class="back-link">← Dashboard</a>
+            <h2>📡 AI Strategy Signals</h2>
+        </div>
+        <button class="refresh-btn" onclick="fetchSignals()">↻ Refresh Data</button>
+    </div>
+    
+    <table id="signalsTable">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Symbol</th>
+                <th>Signal</th>
+                <th>Entry Price</th>
+                <th>Stop Loss</th>
+                <th>Target</th>
+                <th>R:R</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="8" style="text-align:center">Loading signals...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    async function fetchSignals() {
+        try {
+            const response = await fetch('/api/signals');
+            const signals = await response.json();
+            
+            const tbody = document.querySelector('#signalsTable tbody');
+            tbody.innerHTML = '';
+
+            if(signals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center">No signals generated yet.</td></tr>';
+                return;
+            }
+
+            signals.forEach(sig => {
+                const row = document.createElement('tr');
+                const date = new Date(sig.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const signalClass = sig.signal === 'BUY' ? 'buy' : 'sell';
+                
+                row.innerHTML = `
+                    <td class="meta">${date}</td>
+                    <td style="font-weight:bold">${sig.symbol}</td>
+                    <td><span class="badge ${signalClass}">${sig.signal}</span></td>
+                    <td>${sig.price.toFixed(2)}</td>
+                    <td style="color:#d63031">${sig.stopLoss}</td>
+                    <td style="color:#00b894">${sig.target}</td>
+                    <td>${sig.riskRewardRatio}</td>
+                    <td>${sig.confidence}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching signals:', error);
+            document.querySelector('#signalsTable tbody').innerHTML = '<tr><td colspan="8" style="text-align:center; color:red">Failed to load data. Ensure server is running.</td></tr>';
+        }
+    }
+
+    // Load on start and refresh every 10 seconds
+    window.onload = fetchSignals;
+    setInterval(fetchSignals, 10000);
+</script>
+
+</body>
+</html>

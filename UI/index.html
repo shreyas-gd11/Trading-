@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <div>
+                <h1 style="font-family: 'Orbitron', sans-serif; margin: 0; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trading Dashboard</h1>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">AI-Powered Market Analysis</p>
+                <nav style="margin-top: 10px;">
+                    <a href="/" style="text-decoration: none; color: var(--accent-primary); font-weight: bold; margin-right: 15px;">Home</a>
+                    <a href="signals.html" style="text-decoration: none; color: var(--text-secondary); margin-right: 15px;">Signals</a>
+                    <a href="Calculator.html" style="text-decoration: none; color: var(--text-secondary);">Calculator</a>
+                    <a href="profile.html" style="text-decoration: none; color: var(--text-secondary); margin-left: 15px;">Profile</a>
+                </nav>
+            </div>
+            
+            <div class="header-controls">
+                <div class="theme-switch-wrapper" style="display: flex; align-items: center; margin-right: 20px;">
+                    <label class="theme-switch" for="theme-toggle">
+                        <input type="checkbox" id="theme-toggle" />
+                        <div class="slider round"></div>
+                    </label>
+                </div>
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-primary" onclick="openLoginModal()">Login / Signup</button>
+                </div>
+                <div class="user-info" id="user-info" style="display: none; align-items: center; cursor: pointer;" onclick="window.location.href='profile.html'" title="Go to Profile">
+                    <img id="user-avatar" src="" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; border: 2px solid var(--accent-primary);">
+                    <span id="user-name-display" style="font-weight: bold;"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard">
+            <div class="section">
+                <h2 class="section-title">Market Overview</h2>
+                <div id="market-status-badge" class="market-status">Checking...</div>
+                
+                <div style="margin-top: 15px;">
+                    <label for="symbol-select">Select Instrument:</label>
+                    <select id="symbol-select" onchange="fetchAnalysis()">
+                        <option value="NIFTY">NIFTY 50</option>
+                        <option value="BANKNIFTY">BANK NIFTY</option>
+                        <option value="FINNIFTY">FIN NIFTY</option>
+                    </select>
+                    <label for="symbol-select">Select Trading type</label>
+                    <select id="trading-type" onchange="fetchAnalysis()">
+                        <option value="INTRADAY">Intraday</option>
+                        <option value="FUTURE">Future</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="fetchAnalysis()">Refresh</button>
+                </div>
+            </div>
+
+            <div class="dashboard-layout">
+                <div class="main-panel">
+                    <div id="analysis-result" class="analysis-grid">
+                        <div class="section" style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary);">
+                            <p>Select an instrument and click Refresh to see analysis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="news-panel">
+                    <div class="section news-section">
+                        <div class="news-panel-header">
+                            <div>
+                                <h2 class="section-title">Market News</h2>
+                                <p class="section-description">Symbol-focused headlines with quick sentiment.</p>
+                            </div>
+                            <span id="news-status" class="news-status">Live</span>
+                        </div>
+
+                        <div class="news-controls">
+                            <div class="news-control">
+                                <label for="news-symbol-select">Filter Symbol</label>
+                                <select id="news-symbol-select">
+                                    <option value="NIFTY">NIFTY 50</option>
+                                    <option value="BANKNIFTY">BANK NIFTY</option>
+                                    <option value="FINNIFTY">FIN NIFTY</option>
+                                    <option value="RELIANCE">RELIANCE</option>
+                                    <option value="TCS">TCS</option>
+                                    <option value="INFY">INFOSYS</option>
+                                    <option value="HDFCBANK">HDFC BANK</option>
+                                </select>
+                            </div>
+                            <div class="news-control">
+                                <label>Auto Refresh</label>
+                                <div class="news-auto">
+                                    <span id="news-refresh-interval">7 min</span>
+                                    <button class="btn btn-secondary btn-sm" id="news-refresh-btn">Refresh</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="news-meta">
+                            <span id="news-last-updated">Updated --</span>
+                            <span id="news-query">Query: --</span>
+                        </div>
+
+                        <div id="breaking-alert" class="breaking-alert" style="display: none;">
+                            Breaking: <span id="breaking-count">0</span> recent headlines
+                        </div>
+
+                        <div id="headline-banner" class="headline-banner">
+                            <div class="headline-badge">Top Headline</div>
+                            <div id="headline-title" class="headline-title">No headlines yet</div>
+                            <div class="headline-meta">
+                                <span id="headline-source">--</span>
+                                <span id="headline-time">--</span>
+                            </div>
+                            <a id="headline-link" class="headline-link" href="#" target="_blank" rel="noopener">Read full story</a>
+                        </div>
+
+                        <div class="sentiment-summary" style="display: none;">
+                            <div class="sentiment-item positive">
+                                Positive
+                                <span id="sentiment-positive">0</span>
+                            </div>
+                            <div class="sentiment-item neutral">
+                                Neutral
+                                <span id="sentiment-neutral">0</span>
+                            </div>
+                            <div class="sentiment-item negative">
+                                Negative
+                                <span id="sentiment-negative">0</span>
+                            </div>
+                        </div>
+
+                        <div id="ai-insights" class="ai-insights" style="display: none;">
+                            <div class="ai-header">🤖 AI Insight</div>
+                            <div class="ai-metrics">
+                                <div class="metric-row">
+                                    <span class="metric-label">RSI:</span>
+                                    <span class="metric-value" id="ai-rsi">66.89</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">LTP:</span>
+                                    <span class="metric-value" id="ai-ltp">25525.70</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">EMA:</span>
+                                    <span class="metric-value" id="ai-ema">25186.38</span>
+                                </div>
+                            </div>
+                            <div class="ai-signal" id="ai-signal">BUY</div>
+                        </div>
+
+                        <div class="trending-section">
+                            <div class="trending-header">📈 Trending Now</div>
+                            <div id="trending-items" class="trending-items">
+                                <div class="trending-item placeholder">Loading trending...</div>
+                            </div>
+                        </div>
+
+                        <div id="news-cards" class="news-cards">
+                            <div class="news-card placeholder">
+                                <div class="news-card-body">Loading news...</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            
+            <div class="tab-container">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('signup')">Signup</div>
+            </div>
+
+            <!-- Login View -->
+            <div id="view-login" class="auth-view active">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="********">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="handleLogin()">Login</button>
+                <p style="text-align: center; font-size: 0.8rem; margin-top: 10px;">
+                    <a href="#" onclick="switchTab('forgot')" style="color: #3498db;">Forgot Password?</a>
+                </p>
+            </div>
+
+            <!-- Signup View -->
+            <div id="view-signup" class="auth-view">
+                <div class="form-group">
+                    <label for="s-name">Full Name</label>
+                    <input type="text" id="s-name" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="s-phone">Phone Number</label>
+                    <input type="tel" id="s-phone" placeholder="9876543210">
+                </div>
+                <div class="form-group">
+                    <label for="s-email">Email Address</label>
+                    <input type="email" id="s-email" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="s-password">Password</label>
+                    <input type="password" id="s-password" placeholder="********">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="handleSignup()">Sign Up</button>
+            </div>
+
+            <!-- Forgot Password View -->
+            <div id="view-forgot" class="auth-view">
+                <h3>Reset Password</h3>
+                <p style="font-size: 0.8rem; color: #666;">Enter your email to receive a password reset link.</p>
+                <div class="form-group">
+                    <label for="f-email">Email Address</label>
+                    <input type="email" id="f-email" placeholder="name@example.com">
+                </div>
+                <button id="btn-send-reset" class="btn btn-primary" style="width: 100%;" onclick="sendPasswordReset()">Send Reset Link</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="switchTab('login')">Back to Login</button>
+            </div>
+
+            <div id="loader" class="loader"></div>
+            <div id="message" class="error-msg"></div>
+            <div id="success-message" class="success-msg"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let currentUser = null;
+
+        // --- Auth Functions ---
+
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'block';
+            switchTab('login');
+            clearMessages();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
+            clearMessages();
+
+            if (tabName === 'login' || tabName === 'signup') {
+                document.querySelectorAll('.tab')[tabName === 'login' ? 0 : 1].classList.add('active');
+            }
+            document.getElementById(`view-${tabName}`).classList.add('active');
+        }
+
+        function clearMessages() {
+            document.getElementById('message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showMessage(msg, isError = true) {
+            const el = isError ? document.getElementById('message') : document.getElementById('success-message');
+            const other = isError ? document.getElementById('success-message') : document.getElementById('message');
+            el.innerText = msg;
+            el.style.display = 'block';
+            other.style.display = 'none';
+        }
+
+        function toggleLoader(show) {
+            document.getElementById('loader').style.display = show ? 'block' : 'none';
+        }
+
+        // --- API Calls ---
+
+        async function handleSignup() {
+            const name = document.getElementById('s-name').value;
+            const email = document.getElementById('s-email').value;
+            const password = document.getElementById('s-password').value;
+
+            if (!name || !email || !password) return showMessage('Please fill all required fields.');
+
+            toggleLoader(true);
+            try {
+                const res = await fetch(`${API_URL}/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+                const payload = data.data || data;
+                
+                if (res.ok && !data.error) {
+                    showMessage('Signup successful! Please login.', false);
+                    setTimeout(() => switchTab('login'), 1500);
+                } else {
+                    const msg = data.message || data.error || (data.errors && data.errors[0]?.msg) || 'Signup failed';
+                    showMessage(msg);
+                }
+            } catch (err) {
+                showMessage('Network error.');
+            } finally {
+                toggleLoader(false);
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) return showMessage('Please enter email and password.');
+
+            toggleLoader(true);
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                const payload = data.data || data;
+
+                if (res.ok) {
+                    currentUser = payload.user;
+                    if (payload.token) {
+                        localStorage.setItem('token', payload.token);
+                    }
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    closeLoginModal();
+                    updateUIState();
+                    fetchAnalysis();
+                } else {
+                    const msg = data.message || data.error || (data.errors && data.errors[0]?.msg) || 'Login failed';
+                    showMessage(msg);
+                }
+            } catch (err) {
+                showMessage('Network error. Check console.');
+                console.error(err);
+            } finally {
+                toggleLoader(false);
+            }
+        }
+
+        async function sendPasswordReset() {
+            const email = document.getElementById('f-email').value;
+            if (!email) return showMessage('Please enter email.');
+
+            toggleLoader(true);
+            try {
+                const res = await fetch(`${API_URL}/auth/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showMessage('Reset link sent to your email! Please check your inbox.', false);
+                    setTimeout(() => switchTab('login'), 2500);
+                } else {
+                    const msg = data.message || data.error || 'Failed to send reset link.';
+                    showMessage(msg);
+                }
+            } catch(e) { 
+                showMessage('Error sending reset link. Check console.');
+                console.error(e);
+            } finally { 
+                toggleLoader(false); 
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('user');
+            updateUIState();
+        }
+
+        function updateUIState() {
+            const authBtns = document.getElementById('auth-buttons');
+            const userInfo = document.getElementById('user-info');
+
+            if (currentUser) {
+                authBtns.style.display = 'none';
+                userInfo.style.display = 'flex';
+                const displayName = currentUser.name || currentUser.email;
+                document.getElementById('user-name-display').innerText = displayName;
+                if (currentUser.profilePicture) {
+                    document.getElementById('user-avatar').src = currentUser.profilePicture;
+                } else {
+                    document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random&color=fff&size=128`;
+                }
+            } else {
+                authBtns.style.display = 'flex';
+                userInfo.style.display = 'none';
+            }
+        }
+
+        // --- Dashboard Functions ---
+
+        async function fetchAnalysis() {
+            const resultContainer = document.getElementById('analysis-result');
+            
+            if (!currentUser) {
+                resultContainer.innerHTML = '<div class="card" style="grid-column: 1 / -1; text-align: center; color: #c0392b; font-weight: bold;"><p>Please login to view market analysis and dashboard.</p><button class="btn btn-primary" onclick="openLoginModal()">Login Now</button></div>';
+                return;
+            }
+
+            const symbol = document.getElementById('symbol-select').value;
+            const type = document.getElementById('trading-type').value;
+            const statusBadge = document.getElementById('market-status-badge');
+
+            resultContainer.innerHTML = '<p>Loading analysis...</p>';
+
+            try {
+                const res = await fetch(`${API_URL}/analyze?symbol=${symbol}&type=${type}`);
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Update Market Status
+                    statusBadge.innerText = `Market is ${data.marketStatus}`;
+                    statusBadge.className = `market-status ${data.marketStatus === 'Open' ? 'status-open' : 'status-closed'}`;
+
+                    // Render Cards
+                    resultContainer.innerHTML = `
+                        <div class="section">
+                            <h3 class="section-title">Trend Analysis</h3>
+                            <div class="metric"><span>Overall Trend:</span> <span class="${getTrendClass(data.overallTrend)}">${data.overallTrend}</span></div>
+                            <div class="metric"><span>Signal:</span> <span>${data.signal}</span></div>
+                            <div class="metric"><span>RSI:</span> <span>${data.rsi}</span></div>
+                        </div>
+                        <div class="section">
+                            <h3 class="section-title">Volatility (VIX)</h3>
+                            <div class="metric"><span>VIX Level:</span> <span>${data.vix}</span></div>
+                            <div class="metric"><span>Environment:</span> <span>${data.vixEnv}</span></div>
+                        </div>
+                        <div class="section" style="grid-column: 1 / -1;">
+                            <h3 class="section-title">AI Insight</h3>
+                            <p>${data.reason}</p>
+                        </div>
+                    `;
+                } else {
+                    resultContainer.innerHTML = `<p class="error-msg">Error: ${data.error || data.message || 'Request failed'}</p>`;
+                }
+            } catch (err) {
+                resultContainer.innerHTML = `<p class="error-msg">Failed to connect to server. Ensure backend is running.</p>`;
+            }
+        }
+
+        function getTrendClass(trend) {
+            if (trend === 'Bullish') return 'trend-bullish';
+            if (trend === 'Bearish') return 'trend-bearish';
+            return 'trend-neutral';
+        }
+
+        const NEWS_REFRESH_MS = 7 * 60 * 1000;
+        let newsInterval = null;
+
+        function initNews() {
+            const select = document.getElementById('news-symbol-select');
+            const refreshBtn = document.getElementById('news-refresh-btn');
+            const intervalEl = document.getElementById('news-refresh-interval');
+
+            if (!select || !refreshBtn) return;
+
+            if (intervalEl) {
+                intervalEl.textContent = `${Math.round(NEWS_REFRESH_MS / 60000)} min`;
+            }
+
+            select.addEventListener('change', fetchNews);
+            refreshBtn.addEventListener('click', fetchNews);
+
+            fetchNews();
+
+            if (newsInterval) clearInterval(newsInterval);
+            newsInterval = setInterval(fetchNews, NEWS_REFRESH_MS);
+        }
+
+        async function fetchNews() {
+            const cardsEl = document.getElementById('news-cards');
+            const select = document.getElementById('news-symbol-select');
+            if (!cardsEl || !select) return;
+
+            cardsEl.innerHTML = `
+                <div class="news-card placeholder">
+                    <div class="news-card-body">Loading news...</div>
+                </div>
+            `;
+
+            try {
+                const symbol = select.value;
+                const res = await fetch(`${API_URL}/news?symbol=${encodeURIComponent(symbol)}&limit=100`);
+                const payload = await res.json();
+
+                if (!res.ok || !payload.success) {
+                    throw new Error(payload.message || payload.error || 'Failed to load news.');
+                }
+
+                const data = payload.data;
+                renderHeadline(data.topHeadline);
+                renderSentimentSummary(data.summary);
+                renderTrendingNews(data.articles || []);
+                renderNewsCards(data.articles || []);
+                updateBreakingAlert(data.summary || { breaking: 0 });
+
+                const updatedEl = document.getElementById('news-last-updated');
+                const queryEl = document.getElementById('news-query');
+                if (updatedEl) updatedEl.textContent = `Updated ${formatRelativeTime(data.refreshedAt)}`;
+                if (queryEl) queryEl.textContent = `Query: ${data.query}`;
+            } catch (err) {
+                cardsEl.innerHTML = `
+                    <div class="news-card placeholder">
+                        <div class="news-card-body">${escapeHtml(err.message || 'Failed to load news.')}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderHeadline(article) {
+            const titleEl = document.getElementById('headline-title');
+            const sourceEl = document.getElementById('headline-source');
+            const timeEl = document.getElementById('headline-time');
+            const linkEl = document.getElementById('headline-link');
+
+            if (!titleEl || !sourceEl || !timeEl || !linkEl) return;
+
+            if (!article) {
+                titleEl.textContent = 'No headlines yet';
+                sourceEl.textContent = '--';
+                timeEl.textContent = '--';
+                linkEl.href = '#';
+                linkEl.style.pointerEvents = 'none';
+                return;
+            }
+
+            titleEl.textContent = article.title || 'Headline';
+            sourceEl.textContent = article.source || 'Unknown';
+            timeEl.textContent = formatRelativeTime(article.publishedAt);
+
+            const safeLink = safeUrl(article.url);
+            linkEl.href = safeLink;
+            linkEl.style.pointerEvents = safeLink === '#' ? 'none' : 'auto';
+        }
+
+        function renderSentimentSummary(summary) {
+            const positiveEl = document.getElementById('sentiment-positive');
+            const neutralEl = document.getElementById('sentiment-neutral');
+            const negativeEl = document.getElementById('sentiment-negative');
+            if (!summary) return;
+
+            if (positiveEl) positiveEl.textContent = summary.positive || 0;
+            if (neutralEl) neutralEl.textContent = summary.neutral || 0;
+            if (negativeEl) negativeEl.textContent = summary.negative || 0;
+        }
+
+        function renderNewsCards(articles) {
+            const cardsEl = document.getElementById('news-cards');
+            if (!cardsEl) return;
+
+            if (!articles.length) {
+                cardsEl.innerHTML = `
+                    <div class="news-card placeholder">
+                        <div class="news-card-body">No news found for this symbol.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const cards = [];
+            articles.forEach((article, idx) => {
+                // Insert AI Insight every 20 news items
+                if (idx > 0 && idx % 20 === 0) {
+                    cards.push(`
+                        <div class="news-card ai-insight-card">
+                            <div class="ai-card-content">
+                                <div class="ai-card-header">🤖 AI Insight</div>
+                                <div class="ai-card-metrics">
+                                    <div class="ai-card-metric">
+                                        <span class="ai-metric-label">RSI:</span>
+                                        <span class="ai-metric-value">66.89</span>
+                                    </div>
+                                    <div class="ai-card-metric">
+                                        <span class="ai-metric-label">LTP:</span>
+                                        <span class="ai-metric-value">25521.30</span>
+                                    </div>
+                                    <div class="ai-card-metric">
+                                        <span class="ai-metric-label">EMA:</span>
+                                        <span class="ai-metric-value">25186.38</span>
+                                    </div>
+                                </div>
+                                <div class="ai-card-signal">BUY</div>
+                                <a class="ai-card-link" href="#" onclick="return false;">Read more →</a>
+                            </div>
+                        </div>
+                    `);
+                }
+
+                const title = escapeHtml(article.title || 'Untitled');
+                const desc = escapeHtml(article.description || '');
+                const source = escapeHtml(article.source || 'Unknown');
+                const time = formatRelativeTime(article.publishedAt);
+                const breakingTag = article.isBreaking ? '<span class="breaking-tag">⚡ Breaking</span>' : '';
+                const imageUrl = safeUrl(article.image);
+                const imageHtml = imageUrl !== '#'
+                    ? `<img src="${imageUrl}" alt="News image" class="news-card-image">`
+                    : '<div class="news-image placeholder">No Image</div>';
+                const articleUrl = safeUrl(article.url);
+                const linkHtml = articleUrl !== '#'
+                    ? `<a class="news-card-link" href="${articleUrl}" target="_blank" rel="noopener">Read more →</a>`
+                    : '<span class="news-card-link disabled">Link unavailable</span>';
+
+                cards.push(`
+                    <div class="news-card ${article.isBreaking ? 'breaking' : ''}">
+                        ${imageHtml}
+                        <div class="news-card-body">
+                            <div class="news-card-title">${title}</div>
+                            <div class="news-card-desc">${desc}</div>
+                            <div class="news-card-meta">
+                                <span>${source}</span>
+                                <span>${time}</span>
+                                ${breakingTag}
+                            </div>
+                            ${linkHtml}
+                        </div>
+                    </div>
+                `);
+            });
+
+            cardsEl.innerHTML = cards.join('');
+        }
+
+        function renderTrendingNews(articles) {
+            const trendingEl = document.getElementById('trending-items');
+            if (!trendingEl) return;
+
+            if (!articles || articles.length === 0) {
+                trendingEl.innerHTML = `<div class="trending-item placeholder">No trending news</div>`;
+                return;
+            }
+
+            // Get top 5 most recent articles
+            const topTrending = articles.slice(0, 5);
+            
+            trendingEl.innerHTML = topTrending.map((article, idx) => {
+                const title = escapeHtml(article.title || 'Untitled');
+                const time = formatRelativeTime(article.publishedAt);
+                const articleUrl = safeUrl(article.url);
+                
+                return `
+                    <div class="trending-item" onclick="${articleUrl !== '#' ? `window.open('${articleUrl}', '_blank')` : 'return false'}">
+                        <div class="trending-item-text">${idx + 1}. ${title}</div>
+                        <div class="trending-item-meta">${time}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateBreakingAlert(summary) {
+            const alertEl = document.getElementById('breaking-alert');
+            const countEl = document.getElementById('breaking-count');
+            if (!alertEl || !countEl) return;
+
+            const count = summary.breaking || 0;
+            if (count > 0) {
+                countEl.textContent = count;
+                alertEl.style.display = 'block';
+            } else {
+                alertEl.style.display = 'none';
+            }
+        }
+
+        function setSentimentPill(el, sentiment) {
+            const label = (sentiment || 'neutral').toLowerCase();
+            el.className = `sentiment-pill ${label}`;
+            el.textContent = label;
+        }
+
+        function formatRelativeTime(dateString) {
+            if (!dateString) return '--';
+            const timestamp = new Date(dateString).getTime();
+            if (Number.isNaN(timestamp)) return '--';
+            const diffMs = Date.now() - timestamp;
+            const diffMin = Math.floor(diffMs / 60000);
+            if (diffMin < 1) return 'Just now';
+            if (diffMin < 60) return `${diffMin}m ago`;
+            const diffHours = Math.floor(diffMin / 60);
+            if (diffHours < 24) return `${diffHours}h ago`;
+            const diffDays = Math.floor(diffHours / 24);
+            return `${diffDays}d ago`;
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function safeUrl(url) {
+            try {
+                const parsed = new URL(url);
+                if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                    return parsed.toString();
+                }
+            } catch (e) {}
+            return '#';
+        }
+
+        // --- Init ---
+        window.onload = () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+            }
+            updateUIState();
+            if (currentUser) fetchAnalysis();
+            initNews();
+        };
+
+        // Close modal if clicked outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target == modal) {
+                closeLoginModal();
+            }
+        }
+    </script>
+</body>
+</html>
