@@ -620,7 +620,8 @@ select:focus { border-color: var(--accent-primary); }
     min-width: 0; 
     background: linear-gradient(135deg, rgba(0, 217, 255, 0.03), rgba(168, 85, 247, 0.03)); 
     border-radius: 20px; 
-    overflow: hidden; 
+    overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid var(--border-color); 
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
     position: sticky;
@@ -628,6 +629,7 @@ select:focus { border-color: var(--accent-primary); }
     max-height: calc(100vh - 4rem);
     display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
 }
 
 .news-panel::-webkit-scrollbar { 
@@ -649,7 +651,7 @@ select:focus { border-color: var(--accent-primary); }
 }
 
 .news-section { 
-    padding: 2rem; 
+    padding: 1.5rem; 
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -660,9 +662,9 @@ select:focus { border-color: var(--accent-primary); }
     align-items: flex-start; 
     justify-content: space-between; 
     gap: 1rem; 
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
     flex-shrink: 0;
 }
 
@@ -698,103 +700,19 @@ select:focus { border-color: var(--accent-primary); }
     }
 }
 
-.news-controls { 
-    display: grid; 
-    grid-template-columns: 1fr; 
-    gap: 1rem; 
-    margin-bottom: 1rem;
-    flex-shrink: 0;
-}
-
-.news-control {
-    background: rgba(0, 217, 255, 0.03);
-    padding: 1rem;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-}
-
-.news-control label { 
-    display: block; 
-    margin-bottom: 0.75rem; 
-    color: var(--accent-primary); 
-    font-size: 0.8rem; 
-    text-transform: uppercase; 
-    letter-spacing: 1.2px;
-    font-weight: 600;
-}
-
-.news-control select {
-    width: 100%;
-    padding: 0.75rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.news-control select:hover {
-    border-color: var(--accent-primary);
-}
-
-.news-control select:focus {
-    outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
-}
-
-.news-auto { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    gap: 0.75rem; 
-    padding: 0.75rem 1rem; 
-    background: var(--bg-secondary); 
-    border: 1px solid var(--border-color); 
-    border-radius: 10px;
-    transition: all 0.3s ease;
-}
-
-.news-auto:hover {
-    border-color: var(--accent-primary);
-}
-
-.news-auto span {
-    font-weight: 600;
-    color: var(--accent-primary);
-}
-
-.btn-sm { 
-    padding: 0.5rem 1rem; 
-    font-size: 0.75rem;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    border: none;
-    border-radius: 8px;
-    color: var(--bg-primary);
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-sm:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
-}
-
 .news-meta { 
     display: flex; 
     justify-content: space-between; 
     gap: 1rem; 
     color: var(--text-secondary); 
-    font-size: 0.75rem; 
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background: rgba(0, 217, 255, 0.02);
-    border-radius: 8px;
-    border: 1px solid rgba(0, 217, 255, 0.1);
+    font-size: 0.7rem; 
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border-radius: 0;
+    border: none;
     flex-shrink: 0;
+    line-height: 1.3;
 }
 
 .breaking-alert { 
@@ -813,12 +731,12 @@ select:focus { border-color: var(--accent-primary); }
 
 .headline-banner { 
     background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(168, 85, 247, 0.08)); 
-    border: 2px solid rgba(0, 217, 255, 0.4); 
-    border-radius: 16px; 
-    padding: 1.5rem; 
-    margin-bottom: 1.5rem; 
+    border: 1px solid rgba(0, 217, 255, 0.2); 
+    border-radius: 12px; 
+    padding: 1rem 1.25rem; 
+    margin-bottom: 1rem; 
     position: relative; 
-    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.15);
+    box-shadow: none;
     transition: all 0.3s ease;
     flex-shrink: 0;
 }
@@ -842,33 +760,33 @@ select:focus { border-color: var(--accent-primary); }
 }
 
 .headline-title { 
-    margin-top: 1rem; 
-    font-size: 1.1rem; 
+    margin-top: 0.75rem; 
+    font-size: 0.95rem; 
     font-weight: 700; 
-    line-height: 1.5;
+    line-height: 1.4;
     color: var(--text-primary);
 }
 
 .headline-meta { 
     display: flex; 
     flex-wrap: wrap; 
-    gap: 0.75rem; 
+    gap: 0.5rem; 
     align-items: center; 
     color: var(--text-secondary); 
-    font-size: 0.75rem; 
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(0, 217, 255, 0.1);
+    font-size: 0.7rem; 
+    margin-top: 0.5rem;
+    padding-top: 0;
+    border-top: none;
 }
 
 .headline-link { 
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 0.75rem; 
+    margin-top: 0.5rem; 
     color: var(--accent-primary); 
     text-decoration: none; 
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     transition: all 0.2s ease;
 }
@@ -940,46 +858,22 @@ select:focus { border-color: var(--accent-primary); }
 .news-cards { 
     display: flex; 
     flex-direction: column; 
-    gap: 1rem; 
+    gap: 0.75rem; 
     flex: 1;
     min-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible;
     padding-right: 0.5rem;
-    scroll-behavior: smooth;
-    scroll-padding-top: 1rem;
-    will-change: scroll-position;
-}
-
-.news-cards::-webkit-scrollbar { 
-    width: 8px; 
-}
-
-.news-cards::-webkit-scrollbar-track { 
-    background: var(--bg-secondary); 
-    border-radius: 4px; 
-    margin: 5px 0;
-}
-
-.news-cards::-webkit-scrollbar-thumb { 
-    background: var(--border-color); 
-    border-radius: 4px; 
-    transition: background 0.2s ease;
-}
-
-.news-cards::-webkit-scrollbar-thumb:hover { 
-    background: var(--accent-primary); 
 }
 
 .news-card { 
     background: var(--bg-secondary); 
     border: 1px solid var(--border-color); 
-    border-radius: 14px; 
-    padding: 1.25rem; 
+    border-radius: 12px; 
+    padding: 1rem; 
     display: flex; 
     flex-direction: column; 
-    gap: 1rem; 
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); 
+    gap: 0.75rem; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); 
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer;
     contain: layout style paint;
@@ -1275,38 +1169,40 @@ select:focus { border-color: var(--accent-primary); }
 /* Trending Section */
 .trending-section { 
     background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(245, 158, 11, 0.08)); 
-    border: 2px solid rgba(251, 191, 36, 0.3); 
-    border-radius: 14px; 
-    padding: 1.5rem; 
-    margin-top: 1rem; 
-    margin-bottom: 1.5rem; 
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.2); 
+    border-radius: 12px; 
+    padding: 1.25rem; 
+    margin-top: 0.75rem; 
+    margin-bottom: 1rem; 
+    box-shadow: none;
     flex-shrink: 0;
 }
 
 .trending-header { 
-    font-size: 0.9rem; 
+    font-size: 0.75rem; 
     text-transform: uppercase; 
-    letter-spacing: 1.2px; 
+    letter-spacing: 1px; 
     font-weight: 700; 
     color: var(--accent-primary); 
-    margin-bottom: 1rem; 
+    margin-bottom: 0.75rem; 
 }
 
 .trending-items { 
     display: flex; 
     flex-direction: column; 
-    gap: 0.75rem; 
+    gap: 0.5rem; 
 }
 
 .trending-item { 
     background: var(--bg-card); 
     border: 1px solid rgba(0, 217, 255, 0.15); 
-    border-radius: 10px; 
-    padding: 1rem; 
+    border-radius: 8px; 
+    padding: 0.75rem 1rem; 
     cursor: pointer; 
     transition: all 0.3s ease; 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+    box-shadow: none;
+    font-size: 0.9rem;
+    line-height: 1.3;
 }
 
 .trending-item:hover { 
@@ -1352,9 +1248,6 @@ select:focus { border-color: var(--accent-primary); }
     }
     .news-cards { 
         max-height: none; 
-    }
-    .news-controls { 
-        grid-template-columns: 1fr; 
     }
 }
 

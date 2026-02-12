@@ -79,28 +79,6 @@
                             <span id="news-status" class="news-status">Live</span>
                         </div>
 
-                        <div class="news-controls">
-                            <div class="news-control">
-                                <label for="news-symbol-select">Filter Symbol</label>
-                                <select id="news-symbol-select">
-                                    <option value="NIFTY">NIFTY 50</option>
-                                    <option value="BANKNIFTY">BANK NIFTY</option>
-                                    <option value="FINNIFTY">FIN NIFTY</option>
-                                    <option value="RELIANCE">RELIANCE</option>
-                                    <option value="TCS">TCS</option>
-                                    <option value="INFY">INFOSYS</option>
-                                    <option value="HDFCBANK">HDFC BANK</option>
-                                </select>
-                            </div>
-                            <div class="news-control">
-                                <label>Auto Refresh</label>
-                                <div class="news-auto">
-                                    <span id="news-refresh-interval">7 min</span>
-                                    <button class="btn btn-secondary btn-sm" id="news-refresh-btn">Refresh</button>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="news-meta">
                             <span id="news-last-updated">Updated --</span>
                             <span id="news-query">Query: --</span>
@@ -462,23 +440,10 @@
             return 'trend-neutral';
         }
 
-        const NEWS_REFRESH_MS = 7 * 60 * 1000;
+        const NEWS_REFRESH_MS = 5 * 60 * 1000; // Auto-refresh every 5 minutes
         let newsInterval = null;
 
         function initNews() {
-            const select = document.getElementById('news-symbol-select');
-            const refreshBtn = document.getElementById('news-refresh-btn');
-            const intervalEl = document.getElementById('news-refresh-interval');
-
-            if (!select || !refreshBtn) return;
-
-            if (intervalEl) {
-                intervalEl.textContent = `${Math.round(NEWS_REFRESH_MS / 60000)} min`;
-            }
-
-            select.addEventListener('change', fetchNews);
-            refreshBtn.addEventListener('click', fetchNews);
-
             fetchNews();
 
             if (newsInterval) clearInterval(newsInterval);
@@ -487,8 +452,7 @@
 
         async function fetchNews() {
             const cardsEl = document.getElementById('news-cards');
-            const select = document.getElementById('news-symbol-select');
-            if (!cardsEl || !select) return;
+            if (!cardsEl) return;
 
             cardsEl.innerHTML = `
                 <div class="news-card placeholder">
@@ -497,7 +461,7 @@
             `;
 
             try {
-                const symbol = select.value;
+                const symbol = 'NIFTY'; // Always fetch NIFTY news
                 const res = await fetch(`${API_URL}/news?symbol=${encodeURIComponent(symbol)}&limit=100`);
                 const payload = await res.json();
 
